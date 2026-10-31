@@ -3,8 +3,8 @@ import { PRODUCTS, CATEGORIES, type Category } from "@/lib/shop";
 import { ProductCard } from "@/components/Layout";
 
 export const Route = createFileRoute("/shop")({
-  validateSearch: (s: Record<string, unknown>): { category?: Category } => ({
-    category: CATEGORIES.includes(s.category as Category) ? (s.category as Category) : undefined,
+  validateSearch: (s: Record<string, unknown>): { category?: Category | undefined } => ({
+    category: CATEGORIES.includes(s["category"] as Category) ? (s["category"] as Category) : undefined,
   }),
   head: () => ({
     meta: [
