@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
   type ErrorComponentProps,
@@ -93,11 +94,12 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const products = Route.useLoaderData();
+  const isHome = useRouterState({ select: (s) => s.location.pathname === "/" });
   return (
     <QueryClientProvider client={queryClient}>
       <CartProvider products={products}>
         <Header />
-        <main>
+        <main className={isHome ? "" : "pt-36 md:pt-48"}>
           <Outlet />
         </main>
         <Footer />
