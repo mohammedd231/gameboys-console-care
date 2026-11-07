@@ -21,7 +21,7 @@ function Index() {
   return (
     <>
       <section className="relative flex min-h-[min(56vw,100svh)] items-center overflow-hidden">
-        <img src={heroImage} alt="Game console with controllers in red and blue light" width={1600} height={912} className="absolute inset-x-0 bottom-0 top-36 h-[calc(100%-9rem)] w-full object-cover object-[78%_top] md:inset-0 md:top-0 md:h-full md:object-top" />
+        <img src={heroImage} alt="Game console with controllers in red and blue light" width={1600} height={912} className="absolute inset-x-0 bottom-0 top-36 h-[calc(100%-9rem)] w-full object-cover object-[60%_top] md:inset-0 md:top-0 md:h-full md:object-top" />
         <div className="absolute inset-0 bg-hero-fade" />
         <div className="relative mx-auto w-full max-w-6xl px-4 pb-28 pt-60 md:pb-24 md:pt-40">
           <p className="font-display text-sm uppercase tracking-widest text-accent">Since 1992</p>
