@@ -34,16 +34,16 @@ export function Header() {
         <div className="relative mx-auto max-w-6xl px-4 pb-2 pt-3 md:flex md:items-center md:gap-6 md:pb-3">
           <button
             onClick={() => setOpen((v) => !v)}
-            className="absolute left-4 top-[22px] rounded-full bg-white/15 p-3 backdrop-blur hover:bg-white/25 md:hidden"
+            className="absolute left-4 top-4 rounded-full bg-white/15 p-3 backdrop-blur hover:bg-white/25 md:hidden"
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
-          <Link to="/" className="ml-14 flex w-fit justify-start md:order-1 md:ml-0" aria-label="GameBoys home" onClick={() => setOpen(false)}>
+          <Link to="/" className="mx-auto flex w-fit justify-center md:order-1 md:mx-0 md:justify-start" aria-label="GameBoys home" onClick={() => setOpen(false)}>
             <img src="/gameboys-logo.png" alt="GameBoys — since 1992" className="h-16 w-auto drop-shadow-lg md:h-24" />
           </Link>
-          <Link to="/cart" className="absolute right-4 top-[22px] rounded-full bg-white/15 p-3 backdrop-blur hover:bg-white/25 md:static md:order-3" aria-label="Cart">
+          <Link to="/cart" className="absolute right-4 top-4 rounded-full bg-white/15 p-3 backdrop-blur hover:bg-white/25 md:static md:order-3" aria-label="Cart">
             <ShoppingCart className="h-5 w-5" />
             {count > 0 && (
               <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
