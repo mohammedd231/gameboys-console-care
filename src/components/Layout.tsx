@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import { ShoppingCart, MessageCircle } from "lucide-react";
-import logo from "@/assets/gameboys-logo.jpeg.asset.json";
 import { useCart } from "@/lib/cart";
 import { whatsappLink, formatPrice, productImage, type Product } from "@/lib/shop";
 
@@ -14,25 +13,12 @@ const nav = [
 export function Header() {
   const { count } = useCart();
   return (
-    <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
-        <Link to="/" className="flex items-center gap-2">
-          <img src={logo.url} alt="GameBoys logo" className="h-12 w-auto rounded-md bg-logo-bg p-1" />
+    <header className="sticky top-0 z-40 border-b border-white/10 bg-gradient-to-r from-[#0a2a80] via-[#1c0f6b] to-[#4a0f7a] shadow-lg">
+      <div className="relative mx-auto max-w-6xl px-4 pb-2 pt-3">
+        <Link to="/" className="mx-auto flex w-fit justify-center" aria-label="GameBoys home">
+          <img src="/gameboys-logo.png" alt="GameBoys — since 1992" className="h-16 w-auto md:h-24" />
         </Link>
-        <nav className="hidden gap-6 md:flex">
-          {nav.map((n) => (
-            <Link
-              key={n.to}
-              to={n.to}
-              className="font-display text-sm uppercase text-muted-foreground transition-colors hover:text-foreground"
-              activeProps={{ className: "text-primary" }}
-              activeOptions={{ exact: true }}
-            >
-              {n.label}
-            </Link>
-          ))}
-        </nav>
-        <Link to="/cart" className="relative rounded-full bg-secondary p-3 hover:bg-muted" aria-label="Cart">
+        <Link to="/cart" className="absolute right-4 top-4 rounded-full bg-white/15 p-3 backdrop-blur hover:bg-white/25 md:top-8" aria-label="Cart">
           <ShoppingCart className="h-5 w-5" />
           {count > 0 && (
             <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
@@ -40,14 +26,20 @@ export function Header() {
             </span>
           )}
         </Link>
+        <nav className="mt-2 flex justify-center gap-5 border-t border-white/10 pt-2 sm:gap-10">
+          {nav.map((n) => (
+            <Link
+              key={n.to}
+              to={n.to}
+              className="font-display text-xs uppercase tracking-wide text-white/75 transition-colors hover:text-white sm:text-sm"
+              activeProps={{ className: "!text-white border-b-2 border-primary" }}
+              activeOptions={{ exact: true }}
+            >
+              {n.label}
+            </Link>
+          ))}
+        </nav>
       </div>
-      <nav className="flex justify-around border-t py-2 md:hidden">
-        {nav.map((n) => (
-          <Link key={n.to} to={n.to} className="text-xs font-display uppercase text-muted-foreground" activeProps={{ className: "text-primary" }} activeOptions={{ exact: true }}>
-            {n.label}
-          </Link>
-        ))}
-      </nav>
     </header>
   );
 }
@@ -57,7 +49,7 @@ export function Footer() {
     <footer className="mt-24 border-t bg-card">
       <div className="mx-auto grid max-w-6xl gap-6 px-4 py-10 md:grid-cols-3">
         <div>
-          <img src={logo.url} alt="GameBoys" className="h-16 rounded-md bg-logo-bg p-1" />
+          <img src="/gameboys-logo.png" alt="GameBoys" className="h-20 w-auto" />
           <p className="mt-3 text-sm text-muted-foreground">Consoles, accessories & repairs since 1992.</p>
         </div>
         <div className="text-sm text-muted-foreground">
