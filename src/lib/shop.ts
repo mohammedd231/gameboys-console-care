@@ -6,6 +6,16 @@ import repair from "@/assets/repair.jpg";
 export const WHATSAPP_NUMBER = "905349169555";
 export const CURRENCY = "EGP";
 
+// Flat shipping fee in EGP. Set to the real courier price (0 = free shipping).
+export const SHIPPING_FEE = 0;
+
+export const GOVERNORATES = [
+  "Cairo", "Giza", "Alexandria", "Qalyubia", "Sharqia", "Dakahlia", "Gharbia", "Monufia",
+  "Beheira", "Kafr El Sheikh", "Damietta", "Port Said", "Ismailia", "Suez", "North Sinai",
+  "South Sinai", "Fayoum", "Beni Suef", "Minya", "Assiut", "Sohag", "Qena", "Luxor",
+  "Aswan", "Red Sea", "New Valley", "Matrouh",
+] as const;
+
 export const formatPrice = (n: number) => `${n.toLocaleString("en-US")} ${CURRENCY}`;
 
 export const whatsappLink = (text: string) =>

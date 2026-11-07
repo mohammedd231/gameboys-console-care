@@ -7,7 +7,7 @@ export const Route = createFileRoute("/cart")({
   head: () => ({
     meta: [
       { title: "Your Cart — GameBoys" },
-      { name: "description", content: "Review your GameBoys cart and send your order on WhatsApp." },
+      { name: "description", content: "Review your GameBoys cart and check out." },
       { property: "og:title", content: "Your Cart — GameBoys" },
       { property: "og:description", content: "Send your order to GameBoys on WhatsApp." },
     ],
@@ -48,8 +48,11 @@ function Cart() {
         <button onClick={clear} className="text-sm text-muted-foreground hover:text-primary">Clear cart</button>
         <p className="font-display text-2xl">Total: <span className="text-primary">{formatPrice(total)}</span></p>
       </div>
-      <a href={orderLink()} target="_blank" rel="noreferrer" className="btn mt-6 w-full bg-whatsapp py-4 text-background">
-        <MessageCircle className="h-5 w-5" /> Order on WhatsApp
+      <Link to="/checkout" className="btn mt-6 w-full bg-primary py-4 text-primary-foreground">
+        Checkout
+      </Link>
+      <a href={orderLink()} target="_blank" rel="noreferrer" className="btn mt-3 w-full border bg-secondary py-4 text-secondary-foreground">
+        <MessageCircle className="h-5 w-5" /> Or order on WhatsApp
       </a>
     </div>
   );

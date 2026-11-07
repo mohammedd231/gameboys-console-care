@@ -12,4 +12,6 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // Deploy target: Vercel. (Lovable's own sandbox build ignores this and keeps using Cloudflare.)
+  nitro: { preset: "vercel" },
 });
