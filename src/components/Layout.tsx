@@ -28,10 +28,10 @@ export function Header() {
     <header className="sticky top-0 z-40 h-0">
       <div
         className={`absolute inset-x-0 top-0 transition-colors duration-300 ${
-          scrolled || open ? "bg-[#0b1020]/80 backdrop-blur-md" : "bg-gradient-to-b from-black/55 to-transparent"
+          scrolled || open ? "bg-[#0b1020]/80 backdrop-blur-md" : "bg-transparent"
         }`}
       >
-        <div className="relative mx-auto max-w-6xl px-4 pb-2 pt-3">
+        <div className="relative mx-auto max-w-6xl px-4 pb-2 pt-3 md:flex md:items-center md:gap-6 md:pb-3">
           <button
             onClick={() => setOpen((v) => !v)}
             className="absolute left-4 top-4 rounded-full bg-white/15 p-3 backdrop-blur hover:bg-white/25 md:hidden"
@@ -40,10 +40,10 @@ export function Header() {
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
-          <Link to="/" className="mx-auto flex w-fit justify-center" aria-label="GameBoys home" onClick={() => setOpen(false)}>
+          <Link to="/" className="mx-auto flex w-fit justify-center md:order-1 md:mx-0 md:justify-start" aria-label="GameBoys home" onClick={() => setOpen(false)}>
             <img src="/gameboys-logo.png" alt="GameBoys — since 1992" className="h-16 w-auto drop-shadow-lg md:h-24" />
           </Link>
-          <Link to="/cart" className="absolute right-4 top-4 rounded-full bg-white/15 p-3 backdrop-blur hover:bg-white/25 md:top-8" aria-label="Cart">
+          <Link to="/cart" className="absolute right-4 top-4 rounded-full bg-white/15 p-3 backdrop-blur hover:bg-white/25 md:static md:order-3" aria-label="Cart">
             <ShoppingCart className="h-5 w-5" />
             {count > 0 && (
               <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
@@ -51,7 +51,7 @@ export function Header() {
               </span>
             )}
           </Link>
-          <nav className="mt-2 hidden justify-center gap-10 pt-1 text-sm md:flex">
+          <nav className="hidden justify-center gap-10 text-sm md:order-2 md:flex md:flex-1">
             {nav.map((n) => (
               <Link key={n.to} to={n.to} className={link} activeProps={active} activeOptions={{ exact: true }}>
                 {n.label}
