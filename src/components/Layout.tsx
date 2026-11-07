@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ShoppingCart, MessageCircle } from "lucide-react";
 import logo from "@/assets/gameboys-logo.jpeg.asset.json";
 import { useCart } from "@/lib/cart";
-import { whatsappLink, formatPrice, type Product } from "@/lib/shop";
+import { whatsappLink, formatPrice, productImage, type Product } from "@/lib/shop";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -80,7 +80,7 @@ export function ProductCard({ p }: { p: Product }) {
   return (
     <div className="group overflow-hidden rounded-xl border bg-card transition-all hover:-translate-y-1 hover:border-accent hover:shadow-glow-blue">
       <div className="relative aspect-square overflow-hidden">
-        <img src={p.image} alt={p.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+        <img src={productImage(p)} alt={p.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
         {p.tag && <span className="absolute left-3 top-3 rounded-full bg-primary px-3 py-1 text-xs font-bold uppercase text-primary-foreground">{p.tag}</span>}
         <span className="absolute right-3 top-3 rounded-full bg-background/80 px-3 py-1 text-xs">{p.category}</span>
       </div>

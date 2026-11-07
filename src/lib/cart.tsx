@@ -1,8 +1,9 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { PRODUCTS, formatPrice, whatsappLink, type Product } from "./shop";
+import { formatPrice, whatsappLink, type Product } from "./shop";
 
 type Line = { id: string; qty: number };
 type Ctx = {
+  products: Product[];
   lines: (Line & { product: Product })[];
   count: number;
   total: number;
@@ -15,7 +16,7 @@ type Ctx = {
 const CartContext = createContext<Ctx | null>(null);
 const KEY = "gameboys-cart";
 
-export function CartProvider({ children }: { children: ReactNode }) {
+export function CartProvider({ children, products }: { children: ReactNode; products: Product[] }) {
   const [raw, setRaw] = useState<Line[]>([]);
   useEffect(() => {
     try {
@@ -27,12 +28,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(KEY, JSON.stringify(next));
   };
   const lines = raw
-    .map((l) => ({ ...l, product: PRODUCTS.find((p) => p.id === l.id)! }))
+    .map((l) => ({ ...l, product: products.find((p) => p.id === l.id)! }))
     .filter((l) => l.product);
   const total = lines.reduce((s, l) => s + l.qty * l.product.price, 0);
   const count = lines.reduce((s, l) => s + l.qty, 0);
 
   const value: Ctx = {
+    products,
     lines,
     count,
     total,
@@ -57,3 +59,5 @@ export function useCart() {
   if (!c) throw new Error("useCart outside CartProvider");
   return c;
 }
+
+export const useProducts = () => useCart().products;

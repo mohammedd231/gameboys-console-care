@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PRODUCTS, CATEGORIES, type Category } from "@/lib/shop";
+import { CATEGORIES, type Category } from "@/lib/shop";
+import { useProducts } from "@/lib/cart";
 import { ProductCard } from "@/components/Layout";
 
 export const Route = createFileRoute("/shop")({
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/shop")({
 
 function Shop() {
   const { category } = Route.useSearch();
+  const PRODUCTS = useProducts();
   const list = category ? PRODUCTS.filter((p) => p.category === category) : PRODUCTS;
   const chip = (active: boolean) =>
     `rounded-full border px-5 py-2 font-display text-sm uppercase ${active ? "border-primary bg-primary text-primary-foreground" : "hover:border-primary"}`;

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Minus, Plus, MessageCircle, Trash2 } from "lucide-react";
 import { useCart } from "@/lib/cart";
-import { formatPrice } from "@/lib/shop";
+import { formatPrice, productImage } from "@/lib/shop";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
@@ -30,7 +30,7 @@ function Cart() {
       <div className="mt-6 divide-y rounded-xl border bg-card">
         {lines.map((l) => (
           <div key={l.id} className="flex items-center gap-4 p-4">
-            <img src={l.product.image} alt="" className="h-16 w-16 rounded-lg object-cover" />
+            <img src={productImage(l.product)} alt="" className="h-16 w-16 rounded-lg object-cover" />
             <div className="flex-1">
               <p className="font-medium">{l.product.name}</p>
               <p className="text-sm text-accent">{formatPrice(l.product.price)}</p>

@@ -1,7 +1,7 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { Copy, Download, LogOut, MessageCircle, Phone } from "lucide-react";
+import { Copy, Download, LogOut, MessageCircle, Phone, Truck } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   PAYMENT_STATUSES,
@@ -14,7 +14,8 @@ import {
   type PaymentStatus,
 } from "@/lib/orders";
 import { formatPrice } from "@/lib/shop";
-import { adminListOrders, adminLogin, adminLogout, adminSession, adminUpdateOrder } from "@/lib/shop-api";
+import { adminListOrders, adminLogin, adminLogout, adminSendToBosta, adminSession, adminUpdateOrder, getBostaStatus } from "@/lib/shop-api";
+import { AdminProducts } from "@/components/AdminProducts";
 
 export const Route = createFileRoute("/admin")({
   loader: () => adminSession(),
@@ -89,6 +90,7 @@ function Dashboard() {
   const [filter, setFilter] = useState<OrderStatus | "all">("all");
   const [q, setQ] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
+  const [tab, setTab] = useState<"orders" | "products">("orders");
 
   const shown = useMemo(() => {
     const s = q.trim().toLowerCase();
@@ -128,13 +130,20 @@ function Dashboard() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-3xl uppercase">Orders</h1>
+        <div className="flex gap-2">
+          {(["orders", "products"] as const).map((t) => (
+            <button key={t} onClick={() => setTab(t)} className={`rounded-full border px-5 py-2 font-display text-sm uppercase ${tab === t ? "border-primary bg-primary text-primary-foreground" : "hover:border-primary"}`}>
+              {t}
+            </button>
+          ))}
+        </div>
         <div className="flex gap-2">
           <button onClick={exportCsv} className="btn border bg-secondary px-4 py-2 text-xs text-secondary-foreground"><Download className="h-4 w-4" /> CSV</button>
           <button onClick={logout} className="btn border bg-secondary px-4 py-2 text-xs text-secondary-foreground"><LogOut className="h-4 w-4" /> Sign out</button>
         </div>
       </div>
 
+      {tab === "products" ? <AdminProducts /> : (<>
       <div className="mt-6 grid grid-cols-3 gap-3 text-center">
         {([["New", count("new")], ["To ship", count("confirmed")], ["On the way", count("shipped")]] as const).map(([label, n]) => (
           <div key={label} className="rounded-xl border bg-card p-4">
@@ -173,6 +182,8 @@ function Dashboard() {
         ))}
       </div>
 
+      </>)}
+
       <Dialog open={!!open} onOpenChange={(v) => !v && setOpenId(null)}>
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
           {open && (
@@ -206,6 +217,20 @@ function OrderDetail({ order, onSaved }: { order: Order; onSaved: () => Promise<
     await navigator.clipboard.writeText(bostaText(order));
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
+  }
+
+  const { data: bosta } = useQuery({ queryKey: ["bosta-status"], queryFn: () => getBostaStatus() });
+
+  async function sendBosta() {
+    setBusy(true);
+    setError("");
+    try {
+      await adminSendToBosta({ data: { id: order.id } });
+      await onSaved();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Bosta rejected the order");
+      setBusy(false);
+    }
   }
 
   async function save() {
@@ -251,9 +276,16 @@ function OrderDetail({ order, onSaved }: { order: Order; onSaved: () => Promise<
         </p>
       </div>
 
-      <button onClick={copyBosta} className="btn border bg-secondary text-secondary-foreground">
-        <Copy className="h-4 w-4" /> {copied ? "Copied" : "Copy details for Bosta"}
-      </button>
+      <div className="flex flex-wrap gap-2">
+        {bosta?.configured && !order.trackingNumber && order.status !== "cancelled" && (
+          <button onClick={sendBosta} disabled={busy} className="btn bg-accent text-accent-foreground disabled:opacity-60">
+            <Truck className="h-4 w-4" /> Send to Bosta{cod ? ` (collect ${formatPrice(cod)})` : " (already paid)"}
+          </button>
+        )}
+        <button onClick={copyBosta} className="btn border bg-secondary text-secondary-foreground">
+          <Copy className="h-4 w-4" /> {copied ? "Copied" : "Copy details for Bosta"}
+        </button>
+      </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="text-sm">Order status

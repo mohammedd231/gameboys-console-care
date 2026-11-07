@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { GOVERNORATES, PRODUCTS, SHIPPING_FEE, formatPrice } from "./shop";
+import { GOVERNORATES, SHIPPING_FEE, formatPrice, type Product } from "./shop";
 
 export const STATUSES = ["new", "confirmed", "shipped", "delivered", "cancelled", "returned"] as const;
 export type OrderStatus = (typeof STATUSES)[number];
@@ -78,9 +78,9 @@ export const checkoutSchema = z.object({
 export type CheckoutInput = z.input<typeof checkoutSchema>;
 
 /** Prices always come from the server-side catalog, never from the browser. */
-export function priceItems(items: { id: string; qty: number }[]) {
+export function priceItems(items: { id: string; qty: number }[], catalog: Pick<Product, "id" | "name" | "price" | "active">[]) {
   const lines: OrderItem[] = items.map((i) => {
-    const p = PRODUCTS.find((x) => x.id === i.id);
+    const p = catalog.find((x) => x.id === i.id && x.active !== false);
     if (!p) throw new Error(`Unknown product: ${i.id}`);
     return { id: p.id, name: p.name, price: p.price, qty: i.qty };
   });

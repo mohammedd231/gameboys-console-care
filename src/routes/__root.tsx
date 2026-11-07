@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CartProvider } from "@/lib/cart";
 import { Header, Footer } from "@/components/Layout";
+import { getProducts } from "@/lib/shop-api";
 
 function NotFoundComponent() {
   return (
@@ -67,6 +68,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", type: "image/png", href: "/favicon.png" },
     ],
   }),
+  loader: () => getProducts(),
+  staleTime: 60_000,
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
@@ -89,9 +92,10 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const products = Route.useLoaderData();
   return (
     <QueryClientProvider client={queryClient}>
-      <CartProvider>
+      <CartProvider products={products}>
         <Header />
         <main>
           <Outlet />

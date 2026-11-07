@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Wrench, Truck, ShieldCheck } from "lucide-react";
-import { PRODUCTS, CATEGORIES, heroImage, repairImage } from "@/lib/shop";
+import { CATEGORIES, heroImage, repairImage } from "@/lib/shop";
+import { useProducts } from "@/lib/cart";
 import { ProductCard } from "@/components/Layout";
 
 export const Route = createFileRoute("/")({
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const PRODUCTS = useProducts();
   return (
     <>
       <section className="relative overflow-hidden">

@@ -5,6 +5,9 @@ import { PAYMENT_STATUSES, STATUSES, checkoutSchema, priceItems } from "./orders
 import { adminLogin as doLogin, adminLogout as doLogout, isAdmin, requireAdmin } from "./admin-auth.server";
 import { createOrder, getOrder, listOrders, toPublic, updateOrder } from "./orders.server";
 import { createCheckoutUrl, paymobConfigured } from "./paymob.server";
+import { createBostaDelivery, bostaConfigured } from "./bosta.server";
+import { deleteProduct, listProducts, saveProduct, slugify, uploadProductImage } from "./products.server";
+import { CATEGORIES } from "./shop";
 
 const origin = () => process.env["SITE_URL"] || getRequestUrl().origin;
 const idSchema = z.object({ id: z.string().min(6).max(40) });
@@ -19,7 +22,7 @@ export const placeOrder = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => checkoutSchema.parse(d))
   .handler(async ({ data }) => {
     if (data.payment === "card" && !paymobConfigured()) throw new Error("Card payment is not available yet");
-    const { lines, subtotal, shipping, total } = priceItems(data.items);
+    const { lines, subtotal, shipping, total } = priceItems(data.items, await listProducts());
     const order = await createOrder({
       customer: {
         name: data.name,
@@ -95,4 +98,69 @@ export const adminUpdateOrder = createServerFn({ method: "POST" })
     await requireAdmin();
     const { id, ...patch } = data;
     return updateOrder(id, patch);
+  });
+
+// ---------- Products ----------
+
+export const getProducts = createServerFn({ method: "GET" }).handler(async () => listProducts());
+
+export const adminListProducts = createServerFn({ method: "GET" }).handler(async () => {
+  await requireAdmin();
+  return listProducts(true);
+});
+
+export const adminSaveProduct = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        id: z.string().max(60).optional(),
+        name: z.string().trim().min(2).max(100),
+        category: z.enum(CATEGORIES as [string, ...string[]]),
+        price: z.number().int().min(0).max(1_000_000),
+        image: z.string().max(500).default(""),
+        tag: z.string().trim().max(30).default(""),
+        active: z.boolean().default(true),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data }) => {
+    await requireAdmin();
+    return saveProduct({ ...data, id: data.id || slugify(data.name), category: data.category as never, tag: data.tag || undefined, sort: 0 });
+  });
+
+export const adminDeleteProduct = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => z.object({ id: z.string().max(60) }).parse(d))
+  .handler(async ({ data }) => {
+    await requireAdmin();
+    await deleteProduct(data.id);
+    return { ok: true };
+  });
+
+export const adminUploadImage = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z.object({ base64: z.string().max(4_500_000), contentType: z.enum(["image/jpeg", "image/png", "image/webp"]) }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    await requireAdmin();
+    return { url: await uploadProductImage(data.base64, data.contentType) };
+  });
+
+// ---------- Bosta ----------
+
+export const getBostaStatus = createServerFn({ method: "GET" }).handler(async () => {
+  await requireAdmin();
+  return { configured: bostaConfigured() };
+});
+
+export const adminSendToBosta = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => idSchema.parse(d))
+  .handler(async ({ data }) => {
+    await requireAdmin();
+    const o = await getOrder(data.id);
+    if (!o) throw new Error("Order not found");
+    if (o.trackingNumber) throw new Error("This order already has a tracking number");
+    const secret = process.env["BOSTA_WEBHOOK_SECRET"];
+    const hook = secret ? `${origin()}/api/bosta/webhook?secret=${encodeURIComponent(secret)}` : undefined;
+    const { trackingNumber } = await createBostaDelivery(o, hook);
+    return updateOrder(o.id, { trackingNumber, status: o.status === "new" ? "confirmed" : o.status });
   });
